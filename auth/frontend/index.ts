@@ -1,4 +1,19 @@
-console.log("Hello World")
 import './style/main.scss'
 
-document.body.insertAdjacentHTML('afterbegin', '<h1>Hello World</h1>')
+const log = (msg: string) => {
+    document.body.insertAdjacentHTML('beforeend', `<p>${msg}</p>`)
+}
+
+log("Hello World")
+
+const webSocket = new WebSocket('ws://' + window.location.host + '/auth')
+
+webSocket.onopen = () => {
+    log("Websocket connection opened")
+}
+
+webSocket.onmessage = (msg) => {
+    log(`Received message: ${msg.data}`)
+}
+
+log('Built websocket')

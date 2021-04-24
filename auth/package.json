@@ -3,12 +3,14 @@
     "version": "1.0.0",
     "description": "",
     "main": "dist/backend/server.js",
+    "type": "module",
     "scripts": {
         "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
         "build": "tsc && webpack build",
         "prestart": "npm run build",
         "start": "node .",
         "frontend": "webpack serve",
+        "backend": "npm run build && node .",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],

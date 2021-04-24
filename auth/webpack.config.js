@@ -1,13 +1,24 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import path from "path"
+import HtmlWebpackPlugin from "html-webpack-plugin"
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(
+    import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
     entry: './frontend/index.ts',
     mode: 'development',
     devServer: {
         contentBase: path.join(__dirname, 'dist/frontend'),
         compress: true,
-        port: 9000,
+        port: 5010,
+        proxy: {
+            '/auth': {
+                target: 'ws://localhost:5020',
+                ws: true
+            }
+        },
     },
     module: {
         rules: [{

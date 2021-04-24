@@ -18,16 +18,19 @@ authStore.on("error", (error) => {
 
 mail.setApiKey(process.env.SENDGRID_API_KEY)
 
-
 const authWS = new ws.Server({ noServer: true })
 authWS.on('connection', (socket, _head) => {
-  socket.on('message', message => console.log(message))
+    console.log('opened connection')
+    socket.on('message', message => console.log(message))
+    socket.send("ok")
 })
 
 // define a route handler for the default home page
-app.get( "/", ( req, res ) => {
-    res.send( "Hello world!" )
-} )
+app.get( "/api/", ( req, res ) => {
+    res.json({
+        status: "ok"
+    })
+})
 
 const handleAuthReq = async (email: string) : Promise<any> => {
     // we start listening on a websocket for a confirmation
@@ -36,7 +39,7 @@ const handleAuthReq = async (email: string) : Promise<any> => {
     // when the link in the e-mail is clicked
     const token = cryptoRandomString({length: 10})
     const redisResult = await authStore.setex(token, 600, JSON.stringify({
-        email: email
+        email
     }))
 
     const mailResult = await mail.send({
@@ -49,22 +52,18 @@ const handleAuthReq = async (email: string) : Promise<any> => {
 
     return {
         tokenResult: redisResult,
-        mailResult: mailResult
+        mailResult
     }
 }
-
-app.post( "/authenticate", async ( req, res) => {
-    // we generate a token and save it in redis
-
-
-    // res.json({ result: redisResult })
-})
 
 // start the Express server
 const server = app.listen( port, () => {
     console.log( `server started at http://localhost:${ port }` )
-} )
+})
 
 server.on('upgrade', (req, socket, head) => {
-    authWS.emit('connection', socket, req, head)
+    console.log('received upgrade request')
+    authWS.handleUpgrade(req, socket, head, (websocket) => {
+        authWS.emit('connection', websocket, req, head)
+    })
 })
