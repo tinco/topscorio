@@ -25,29 +25,47 @@ export default class Session {
         this.send('resumed', { session: this.session })
     }
 
+    async startAuth(data: any) {
+        const result = this.startAuthentication(data.email)
+        this.send('auth-started', result)
+    }
+
+    async finishAuth(data: any) {
+        const userInfo = await authStore.finishAuthentication(data.token)
+        this.session.email = userInfo.email
+        this.save()
+        this.send('auth-finished', { session: this.session, newUser: userInfo.newUser })
+    }
+
+    save() {
+        return authStore.saveSession(this.session)
+    }
+
     send(method: string, data: any) {
         return this.handler.send({ method, data })
     }
 
-    async handleAuthReq(email: string) : Promise<any> {
+    async startAuthentication(email: string) : Promise<any> {
         // we start listening on a websocket for a confirmation
         // we start listening internally for a confirmation
         // then we send an e-mail
         // when the link in the e-mail is clicked
         const token = makeToken()
 
-        const redisResult = !!authStore.startEmailAuth(token, email)
-
-        const mailResult = await mailer.send({
+        const [redisResult, mailResult] = await Promise.all([
+            authStore.startAuthentication(token, email),
+            mailer.send({
             to: 'mail@tinco.nl',
             from: 'mail@tinco.nl', // Change to your verified sender
             subject: 'Log in at Topscorio',
-            text: 'and easy to do anywhere, even with Node.js',
-            html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-        })
+            text: `Log in at Topscorio using the following link https://www.topscorio.com/auth?token=${token}`,
+            html: `
+                Log in at <strong>Topscorio</strong> using the following link:
+                <a href="https://www.topscorio.com/auth?token=${token}">https://www.topscorio.com/auth?token=${token}</a>`,
+        })])
 
         return {
-            tokenResult: redisResult,
+            tokenResult: !!redisResult,
             mailResult
         }
     }
