@@ -34,12 +34,21 @@ class Authentication {
                 <input type="text" id="resume-token" />
                 <button id="resume-button">Resume</button>
                 <div id="authentication"></div>
+                <p>Authenticate</p>
+                <input type="text" id="email" />
+                <button id="authenticate-button">Start authenticate</button>
+                <input type="text" id="auth-token" />
+                <button id="finish-authenticate-button">Finish authenticate</button>
             </section>
         `)
         const startButton = document.getElementById('start-button')
         const resumeButton = document.getElementById('resume-button')
+        const authenticateButton = document.getElementById('authenticate-button')
+        const finishAuthenticateButton = document.getElementById('finish-authenticate-button')
         startButton.onclick = () => this.startSession()
         resumeButton.onclick = () => this.resumeSession()
+        authenticateButton.onclick = () => this.startAuthentication()
+        finishAuthenticateButton.onclick = () => this.finishAuthentication()
     }
 
     startSession() {
@@ -49,6 +58,16 @@ class Authentication {
     resumeSession() {
         const token = (document.getElementById('resume-token') as HTMLInputElement).value
         webSocket.send(JSON.stringify({method: 'resume', data: { sessionToken: token} }))
+    }
+
+    startAuthentication() {
+        const email = (document.getElementById('email') as HTMLInputElement).value
+        webSocket.send(JSON.stringify({method: 'start-auth', data: { email }}))
+    }
+
+    finishAuthentication() {
+        const token = (document.getElementById('auth-token') as HTMLInputElement).value
+        webSocket.send(JSON.stringify({method: 'finish-auth', data: { token }}))
     }
 }
 

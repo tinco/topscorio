@@ -1,10 +1,11 @@
 import Redis from "ioredis"
 import RedisJSON from "ioredis-json"
 
+import dotenv from "dotenv"
+dotenv.config()
+
 const sessionStore = new Redis(process.env.SESSION_REDIS)
 const usersStore = new RedisJSON(process.env.USERS_REDIS)
-
-sessionStore.config('SET', 'stop-writes-on-bgsave-error', "no")
 
 sessionStore.on("error", (error) => {
     console.error("SESSION_REDIS_ERROR:", error)

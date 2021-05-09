@@ -16,6 +16,8 @@ export default class SessionHandler {
             switch (message.method) {
                 case 'start': this.session.start(message.data); break
                 case 'resume': this.session.resume(message.data); break
+                case 'start-auth': this.session.startAuth(message.data); break
+                case 'finish-auth': this.session.finishAuth(message.data); break
                 default: throw new Error(`Unkown command ${message.method}`)
             }
         } catch (e) {
