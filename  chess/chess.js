@@ -2020,7 +2020,6 @@ export default class ChessGame {
     calculateScore(state, chess, last_player) {
         state.players.forEach((player, i, players) => {
             const opponent = players[(i + 1) % 2]
-                // FIDE adjustment factor K (without taking age into account)
             const k = player.rating > 2400 ? 10 : (player.games.length < 30 ? 40 : 20)
             const expected = 1 / (1 + Math.pow(10, (opponent.rating - player.rating) / 400))
             const actual = chess.is_draw() ? 0.5 : player.id == last_player ? 1 : 0
@@ -2030,5 +2029,6 @@ export default class ChessGame {
         })
         state.players[0].rating = state.players[0].rating + state.players[0].games[state.players[0].games.length - 1].s
         state.players[1].rating = state.players[1].rating + state.players[1].games[state.players[1].games.length - 1].s
+        return state
     }
 }

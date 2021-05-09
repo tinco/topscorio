@@ -10,14 +10,14 @@ export default class SessionHandler {
         this.session = new Session(this)
     }
 
-    handleMessage(rawMessage: string) {
+    async handleMessage(rawMessage: string) {
         try {
             const message = JSON.parse(rawMessage)
             switch (message.method) {
-                case 'start': this.session.start(message.data); break
-                case 'resume': this.session.resume(message.data); break
-                case 'start-auth': this.session.startAuth(message.data); break
-                case 'finish-auth': this.session.finishAuth(message.data); break
+                case 'start': await this.session.start(message.data); break
+                case 'resume': await this.session.resume(message.data); break
+                case 'start-auth': await this.session.startAuth(message.data); break
+                case 'finish-auth': await this.session.finishAuth(message.data); break
                 default: throw new Error(`Unkown command ${message.method}`)
             }
         } catch (e) {
@@ -35,7 +35,7 @@ export default class SessionHandler {
     }
 
     sendError(e: Error) {
-        console.error(`Error: ${e.message}, ${e.name}\n${e.stack}` )
+        // console.error(`Error: ${e.message}, ${e.name}\n${e.stack}` )
         this.send({ method: "error", data: { message: e.message, name: e.name, stack: e.stack}})
     }
 }

@@ -13,8 +13,10 @@ const authWS = new ws.Server({ noServer: true })
 authWS.on('connection', (socket, _head) => {
     const handler = new SessionHandler(socket)
     console.log('opened connection')
-    socket.on('message', message => handler.handleMessage(message as string))
-    socket.send("ok")
+    socket.on('message', message => {
+        handler.handleMessage(message as string)
+    })
+    socket.send(JSON.stringify({method: 'status', data: "ok"}))
 })
 
 // define a route handler for the default home page

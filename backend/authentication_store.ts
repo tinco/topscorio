@@ -25,7 +25,13 @@ class AuthStore {
     }
 
     async resumeSession(sessionToken: string) {
+        if (!sessionToken) {
+            throw new Error("SessionToken null")
+        }
         const session = await sessionStore.get(sessionKey(sessionToken))
+        if (!session) {
+            throw new Error("Invalid or expired session")
+        }
         return JSON.parse(session)
     }
 
