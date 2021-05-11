@@ -16,8 +16,6 @@ Alright so the way we want to do this is:
  - The gamestate has states for public, private and each player.
  - Public state should have standardized field for finished, or accepting moves state, and scores per player
 
-Can we wrap tetris like this?
-
 */
 
 class GameLog {
