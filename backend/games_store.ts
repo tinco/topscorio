@@ -26,19 +26,21 @@ class GamesStore {
         }
     }
 
-    async addGame(gameId: string, gameInfo: any) {
+    async addGame(user: string, gameId: string, gameInfo: any) {
         gameInfo.id = gameId
+        gameInfo.publisher = user
         await gamesStore.set(gameKey(gameId),".", gameInfo)
-        const newCount = await gamesStore.arrappend('all-games', '.newest', [gameInfo])
+        const newCount = await gamesStore.arrappend('all-games', '.newest', gameInfo)
         const newCountAfter = await gamesStore.arrtrim('all-games', '.newest', newCount - 50, newCount + 10000)
         console.log('added game, new count is:', newCount, newCountAfter)
         return gameInfo
     }
 
-    async getNewestGames(gameId: string, gameInfo: any): Promise<any[]> {
-        gameInfo.id = gameId
+    async getNewestGames(): Promise<any[]> {
         return gamesStore.get('all-games', '.newest')
     }
 }
 
-export default new GamesStore()
+const store = new GamesStore()
+store.initialize()
+export default store

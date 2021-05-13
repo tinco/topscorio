@@ -18,6 +18,8 @@ export default class SessionHandler {
                 case 'resume': await this.session.resume(message.data); break
                 case 'start-auth': await this.session.startAuth(message.data); break
                 case 'finish-auth': await this.session.finishAuth(message.data); break
+                case 'add-game': await this.session.addGame(message.data); break
+                case 'get-newest-games': await this.session.getNewestGames(message.data); break
                 default: throw new Error(`Unkown command ${message.method}`)
             }
         } catch (e) {

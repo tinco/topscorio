@@ -11,6 +11,7 @@ class Session {
     lastCloseTime = new Date()
     backOffMillis = 1000
     session: any = {}
+    listeners: Map<string, ((data: any) => void)[]> = new Map() 
 
     constructor() {
         this.start()
@@ -45,7 +46,19 @@ class Session {
         switch(msg.method) {
             case 'resumed': this.onresumed(msg.data); break
             case 'started': this.onstarted(msg.data); break
+            default: this.received(msg.method, msg.data); break
         }
+    }
+
+    on(method: string, listener: (data: any) => void) {
+        if(!this.listeners.has(method)) {
+            this.listeners.set(method, [])
+        }  
+        this.listeners.get(method).push(listener)
+    }
+
+    received(method: string, data:any) {
+        this.listeners.get(method)?.forEach(l => l(data))
     }
 
     start() {
@@ -66,9 +79,8 @@ class Session {
 
         this.socket.onclose = (msg) => {
             log(`Socket closed ${msg}`)
-
             // if (secondsAgo(1) > this.lastCloseTime) {
-                setTimeout(() => { this.start() }, this.backOffMillis)
+            setTimeout(() => { this.start() }, this.backOffMillis)
             // } else {
             //     this.start()
             // }
@@ -97,6 +109,14 @@ class Session {
 
     finishAuthentication(token: string) {
         this.send('finish-auth', { token })
+    }
+
+    addGame(gameInfo: any) {
+        this.send('add-game', gameInfo)
+    }
+
+    getNewestGames() {
+        this.send('get-newest-games',{})
     }
 }
 

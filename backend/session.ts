@@ -2,6 +2,7 @@ import SessionHandler from './session_handler.js'
 import authStore from './authentication_store.js'
 import cryptoRandomString from 'crypto-random-string'
 import mailer from './mailer.js'
+import gamesStore from './games_store.js'
 
 const makeToken = (length=10): string => cryptoRandomString({length})
 
@@ -35,6 +36,21 @@ export default class Session {
         this.session.email = userInfo.email
         this.save()
         this.send('auth-finished', { session: this.session, newUser: userInfo.newUser })
+    }
+
+    async addGame(gameInfo: any) {
+        if (this.session.email) {
+            const gameId = makeToken(24)
+            const result = await gamesStore.addGame(this.session.email, gameId, gameInfo)
+            this.send('added-game', { gameInfo: result })
+        } else {
+            this.send('error', { message: 'Not authenticated.'})
+        }
+    }
+
+    async getNewestGames(_options: any) {
+        const newestGames = await gamesStore.getNewestGames()
+        this.send('newest-games', { games: newestGames })
     }
 
     save() {

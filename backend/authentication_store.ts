@@ -36,7 +36,7 @@ class AuthStore {
     }
 
     async saveSession(session: any) {
-        return sessionStore.setex(session.sessionToken, 60*60*24*31, JSON.stringify(session))
+        return sessionStore.setex(sessionKey(session.sessionToken), 60*60*24*31, JSON.stringify(session))
     }
 
     async startAuthentication(token: string, email: string) {
