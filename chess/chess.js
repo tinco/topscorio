@@ -1985,9 +1985,13 @@ function assignedColors() {
     return Math.random() > 0.5 ? color : colors.reverse()
 }
 
-export default class ChessGame {
+class Game {
     start(players) {
         const chess = new Chess()
+        const colors = new Map()
+
+        assignedColors().forEach((color, index) => colors.set(players[index].id, color))
+
         const state = {
             fen: chess.fen(),
             colors: assignedColors(),
@@ -1998,7 +2002,7 @@ export default class ChessGame {
 
     move(state, player, move) {
         const chess = new Chess(state.fen)
-        if (state.colors[player.index] !== chess.turn()) {
+        if (state.colors.get(player.id) !== chess.turn()) {
             return { error: "Not your turn" }
         }
 
@@ -2018,12 +2022,14 @@ export default class ChessGame {
     }
 
     calculateScore(state, chess, last_player) {
+        state.score = {}
         state.players.forEach((player, i, players) => {
             const opponent = players[(i + 1) % 2]
             const k = player.rating > 2400 ? 10 : (player.games.length < 30 ? 40 : 20)
             const expected = 1 / (1 + Math.pow(10, (opponent.rating - player.rating) / 400))
             const actual = chess.is_draw() ? 0.5 : player.id == last_player ? 1 : 0
             const change = k * (actual - expected)
+            state.score[player.id] = change
             const outcome = actual === 0.5 ? '=' : actual === 1 ? '=' : '-'
             player.games.push({ o: outcome, p: player.id, r: opponent.rating, s: change })
         })
