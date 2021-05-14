@@ -1980,21 +1980,25 @@ var Chess = function(fen) {
     }
 }
 
-function assignedColors() {
-    let colors = ['b', 'w']
-    return Math.random() > 0.5 ? color : colors.reverse()
-}
+
 
 class Game {
+    assignedColors() {
+        let colors = ['b', 'w']
+        return Math.random() > 0.5 ? colors : colors.reverse()
+    }
+
     start(players) {
         const chess = new Chess()
-        const colors = new Map()
 
-        assignedColors().forEach((color, index) => colors.set(players[index].id, color))
+        const assignedColors = this.assignedColors()
+        const colors = {}
+        colors[players[0].id] = assignedColors[0]
+        colors[players[1].id] = assignedColors[1]
 
         const state = {
             fen: chess.fen(),
-            colors: assignedColors(),
+            colors: colors,
             players: players.map((p) => Object.assign({ games: [], rating: 1200 }, p))
         }
         return state
@@ -2002,7 +2006,7 @@ class Game {
 
     move(state, player, move) {
         const chess = new Chess(state.fen)
-        if (state.colors.get(player.id) !== chess.turn()) {
+        if (state.colors[player.id] !== chess.turn()) {
             return { error: "Not your turn" }
         }
 

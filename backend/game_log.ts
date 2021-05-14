@@ -18,6 +18,48 @@ Alright so the way we want to do this is:
 
 */
 
-class GameLog {
+import {VM, VMScript} from 'vm2'
+import fs from 'fs'
 
+interface IGameState {
+    game_over: boolean
+    scores: {[key: string]: number}
+}
+
+interface IPlayer {
+    id: string
+}
+
+interface IGame<State extends IGameState> {
+    start(players: IPlayer[]): State
+    move(state: State, player: IPlayer ): State
+}
+
+export default class GameLog {
+    startGame(gameId: string, players: IPlayer[]) {
+        const code = fs.readFileSync('./chess/chess.js', 'utf8')
+        console.log('compiling script...')
+        const script = new VMScript(code as unknown as string)
+        script.compile()
+        console.log('Script compiled.')
+        console.log('Making VM...')
+        const vm = new VM({
+            // timeout: 1000,
+            eval: false,
+            wasm: false,
+            fixAsync: true,
+            sandbox: {
+                console: {
+                    log: (msg: string) => console.log('VM2: ' + msg)
+                }
+            }
+        })
+        vm.freeze(players, 'players')
+        vm.run(script)
+        const state = vm.run(`
+            const g = new Game()
+            g.start(players)
+        `)
+        console.log("new state", state)
+    }
 }
