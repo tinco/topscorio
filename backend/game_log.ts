@@ -36,15 +36,15 @@ interface IGame<State extends IGameState> {
 }
 
 export default class GameLog {
-    startGame(gameId: string, players: IPlayer[]) {
+
+    getGame(gameInfo: any): VM {
         const code = fs.readFileSync('./chess/chess.js', 'utf8')
-        console.log('compiling script...')
         const script = new VMScript(code as unknown as string)
+        console.log('compiling script...')
         script.compile()
         console.log('Script compiled.')
-        console.log('Making VM...')
         const vm = new VM({
-            // timeout: 1000,
+            timeout: 1000,
             eval: false,
             wasm: false,
             fixAsync: true,
@@ -54,12 +54,60 @@ export default class GameLog {
                 }
             }
         })
-        vm.freeze(players, 'players')
         vm.run(script)
-        const state = vm.run(`
-            const g = new Game()
-            g.start(players)
-        `)
-        console.log("new state", state)
+        return vm
     }
-}
+
+    startGame(gameInfo: any, players: IPlayer[]): IGameState {
+        console.log('Making VM...')
+        const vm = this.getGame(gameInfo)
+        vm.setGlobal('players', players)
+
+        const state = JSON.parse(vm.run(`
+            const g = new Game()
+            JSON.stringify(g.start(players))
+        `))
+        console.log("new state", state)
+        return state
+    }
+
+    makeMove(gameInfo: any, gameState: IGameState, player: IPlayer, move: any): IGameState {
+        console.log('Making VM...')
+        const vm = this.getGame(gameInfo)
+        vm.setGlobal('state', gameState)
+        vm.setGlobal('player', player)
+        vm.setGlobal('move', move)
+
+        const state = JSON.parse(vm.run(`
+            const g = new Game()
+            JSON.stringify(g.move(state, player, move))
+        `))
+        console.log("new state", state)
+        return state
+    }
+
+    foolsMate() {
+        // const vm = this.getGame(null)
+        let state: IGameState = {
+            fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            colors: { A: 'w', B: 'b' },
+            players: [
+                { games: [] as any[], rating: 1200, id: 'A' },
+                { games: [] as any[], rating: 1200, id: 'B' }
+            ],
+            game_over: false,
+            scores: {}
+        } as IGameState
+
+        const playerOne = (state as any).players[0] as IPlayer
+        const playerTwo = (state as any).players[1] as IPlayer
+
+        state = this.makeMove(null, state, playerOne, 'f3')
+        console.log("Move 1:", state)
+        state = this.makeMove(null, state, playerTwo, 'e5')
+        console.log("Move 2:", state)
+        state = this.makeMove(null, state, playerOne, 'g4')
+        console.log("Move 3:", state)
+        state = this.makeMove(null, state, playerTwo, 'Qh4#')
+        console.log("Move 4:", state)
+    }
