@@ -2019,6 +2019,7 @@ class Game {
         state.game_over = chess.game_over()
 
         if (state.game_over) {
+            console.log('Game over calculating score')
             return this.calculateScore(state, chess, player)
         }
 
@@ -2027,11 +2028,11 @@ class Game {
 
     calculateScore(state, chess, last_player) {
         state.score = {}
-        state.players.forEach((player, i, players) => {
-            const opponent = players[(i + 1) % 2]
+        state.players.forEach((player, i) => {
+            const opponent = state.players[(i + 1) % 2]
             const k = player.rating > 2400 ? 10 : (player.games.length < 30 ? 40 : 20)
             const expected = 1 / (1 + Math.pow(10, (opponent.rating - player.rating) / 400))
-            const actual = chess.is_draw() ? 0.5 : player.id == last_player ? 1 : 0
+            const actual = chess.in_draw() ? 0.5 : player.id === last_player.id ? 1 : 0
             const change = k * (actual - expected)
             state.score[player.id] = change
             const outcome = actual === 0.5 ? '=' : actual === 1 ? '=' : '-'

@@ -45,18 +45,22 @@ class AuthStore {
 
     async finishAuthentication(token: string) {
         const authResult = await sessionStore.get(token).then((r) => JSON.parse(r))
-        const userInfo = await usersStore.get(authResult.email, '.')
+        let userInfo = await usersStore.get(authResult.email, '.')
+        let newUser = false
 
         if (!userInfo) {
-             await usersStore.set(authResult.email, '.', {
-                newUser: true
-            })
+            userInfo = {
+                newUser: true,
+                id: token,
+                email: authResult.email
+            }
+
+            await usersStore.set(authResult.email, '.', userInfo)
+        } else {
+           newUser = true
         }
 
-        return {
-            email: authResult.email,
-            newUser: !!userInfo
-        }
+        return Object.assign(userInfo, { newUser })
     }
 }
 

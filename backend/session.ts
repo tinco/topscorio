@@ -3,6 +3,7 @@ import authStore from './authentication_store.js'
 import cryptoRandomString from 'crypto-random-string'
 import mailer from './mailer.js'
 import gamesStore from './games_store.js'
+import gameLog from './game_log.js'
 
 const makeToken = (length=10): string => cryptoRandomString({length})
 
@@ -12,6 +13,12 @@ export default class Session {
 
     constructor(handler: SessionHandler) {
         this.handler = handler
+
+        gamesStore.on('games-newest', (game) => this.send('new-game', game))
+    }
+
+    get userInfo() {
+        return this.session.userInfo
     }
 
     async start(data: any) {
@@ -33,15 +40,15 @@ export default class Session {
 
     async finishAuth(data: any) {
         const userInfo = await authStore.finishAuthentication(data.token)
-        this.session.email = userInfo.email
+        this.session.userInfo = userInfo
         this.save()
-        this.send('auth-finished', { session: this.session, newUser: userInfo.newUser })
+        this.send('auth-finished', { session: this.session })
     }
 
     async addGame(gameInfo: any) {
-        if (this.session.email) {
+        if (this.userInfo) {
             const gameId = makeToken(24)
-            const result = await gamesStore.addGame(this.session.email, gameId, gameInfo)
+            const result = await gamesStore.addGame(this.userInfo.email, gameId, gameInfo)
             this.send('added-game', { gameInfo: result })
         } else {
             this.send('error', { message: 'Not authenticated.'})
@@ -51,6 +58,47 @@ export default class Session {
     async getNewestGames(_options: any) {
         const newestGames = await gamesStore.getNewestGames()
         this.send('newest-games', { games: newestGames })
+    }
+
+    async createGameLog(gameId: string) {
+        if (!this.userInfo) {
+            throw new Error("Only logged in users can play logged games.")
+        }
+
+        const state = await gameLog.createGame(gameId, this.userInfo)
+
+        this.send('created-game', state)
+        this.followGameLog(state.gameLogId)
+    }
+
+    followGameLog(id: string) {
+        gamesStore.on(`game_log-${id}`, (state: any) => {
+            this.send('game-log', state)
+        })
+    }
+
+    async joinGameLog(gameId: string) {
+        if (!this.userInfo) {
+            throw new Error("Only logged in users can play logged games.")
+        }
+
+        await gameLog.joinGame(gameId, { id: this.userInfo })
+        this.followGameLog(gameId)
+    }
+
+    async startGameLog(id: string) {
+        if (!this.userInfo) {
+            throw new Error("Only logged in users can play logged games.")
+        }
+
+        gameLog.startGame(id, this.userInfo)
+    }
+
+    async makeMove(gameLogId: string, move: any) {
+        if (!this.userInfo) {
+            throw new Error("Only logged in users can play logged games.")
+        }
+        gameLog.makeMove(gameLogId, this.userInfo, move)
     }
 
     save() {
