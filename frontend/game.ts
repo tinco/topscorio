@@ -49,23 +49,34 @@ class Game {
         }
 
         const color = this.state.colors[this.session.userInfo.id] === 'w' ? 'white' : 'black'
+        const turnColor = this.state.turn_color === 'w' ? 'white' : 'black'
+        console.log('My color is: ', color)
+        console.log('Turn is: ', turnColor, this.state.turn_color)
         const cg = Chessground(document.getElementById('board'), {
             fen: this.state.fen,
             orientation: color,
+            turnColor,
             movable: {
                 color,
-                free: false
+                free: true,
+                events: {
+                    after: (orig, dest, meta) => this.makeMove(orig, dest, meta)
+                }
             },
             draggable: {
                 showGhost: true
-            }
+            },
         })
+    }
+
+    makeMove(orig: string, dest: string, meta: any) {
+        console.log('Moving', orig, dest, meta)
+        this.session.makeMove(this.id, { from: orig, to: dest})
     }
 
     nextState(state: any) {
         if (state.gameLogId !== this.id) { return }
         this.state = state
-        console.log('next state', state)
         if (this.state.started) {
             this.renderGame()
         }

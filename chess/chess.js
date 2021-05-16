@@ -1999,6 +1999,7 @@ class Game {
         const state = {
             fen: chess.fen(),
             colors: colors,
+            turn_color: 'w',
             players: players.map((p) => Object.assign({ games: [], rating: 1200 }, p))
         }
         return state
@@ -2021,6 +2022,8 @@ class Game {
         if (state.game_over) {
             console.log('Game over calculating score')
             return this.calculateScore(state, chess, player)
+        } else {
+            state.turn_color = chess.turn()
         }
 
         return state
