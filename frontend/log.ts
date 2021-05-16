@@ -2,7 +2,8 @@ document.body.insertAdjacentHTML('beforeend', `<section id="log-section"><div id
 const logElement = document.getElementById('log')
 
 const log = (msg: string) => {
-    logElement.insertAdjacentHTML('beforeend', `<p>${msg}</p>`)
+    // logElement.insertAdjacentHTML('beforeend', `<p>${msg}</p>`)
+    console.log(msg)
 }
 
 export default log

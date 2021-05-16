@@ -45,6 +45,9 @@ class AuthStore {
 
     async finishAuthentication(token: string) {
         const authResult = await sessionStore.get(token).then((r) => JSON.parse(r))
+        if (!authResult) {
+            throw new Error("Invalid token")
+        }
         let userInfo = await usersStore.get(authResult.email, '.')
         let newUser = false
 
@@ -61,6 +64,10 @@ class AuthStore {
         }
 
         return Object.assign(userInfo, { newUser })
+    }
+
+    async saveUser(userInfo: any) {
+        return usersStore.set(userInfo.email, '.', userInfo)
     }
 }
 

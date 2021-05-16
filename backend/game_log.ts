@@ -72,7 +72,7 @@ export default new class GameLog {
     async joinGame(id: string, player: IPlayer) {
         const gameState = await gamesStore.getGameState(id)
         const gameInfo = await gamesStore.getGameInfo(gameState.gameId)
-        if (!gameState.started || gameState.players.length < gameInfo.playerCount) {
+        if (!gameState.started ) { // && gameState.players.length < gameInfo.playerCount) {
             gameState.players.push(player)
             await gamesStore.saveGameState(id, gameState)
         } else {
@@ -101,7 +101,9 @@ export default new class GameLog {
             JSON.stringify(g.start(players))
         `))
 
-        await this.handleGameStateUpdate(id, state)
+        state.started = true
+
+        await this.handleGameStateUpdate(id, Object.assign(gameState, state))
         return id
     }
 

@@ -17,6 +17,10 @@ class Session {
         this.start()
     }
 
+    get userInfo() {
+        return this.session.userInfo
+    }
+
     onopen() {
         log("Websocket connection opened")
         
@@ -46,6 +50,7 @@ class Session {
         switch(msg.method) {
             case 'resumed': this.onresumed(msg.data); break
             case 'started': this.onstarted(msg.data); break
+            case 'auth-finished': this.onAuthFinished(msg.data); break
             default: this.received(msg.method, msg.data); break
         }
     }
@@ -55,6 +60,10 @@ class Session {
             this.listeners.set(method, [])
         }  
         this.listeners.get(method).push(listener)
+    }
+
+    onAuthFinished(data: any) {
+        this.session = data.session
     }
 
     received(method: string, data:any) {
@@ -73,7 +82,6 @@ class Session {
         this.socket.onopen = () => this.onopen()
 
         this.socket.onmessage = (msg) => {
-            console.log(msg.data)
             this.onmessage(JSON.parse(msg.data))
         }
 
@@ -117,6 +125,22 @@ class Session {
 
     getNewestGames() {
         this.send('get-newest-games',{})
+    }
+
+    createGame(gameId: string) {
+        this.send('create-game', gameId)
+    }
+
+    joinGame(gameId: string) {
+        this.send('join-game', gameId)
+    }
+
+    startGame(gameId: string) {
+        this.send('start-game', gameId)
+    }
+
+    makeMove(gameId: string, move: any) {
+        this.send('make-move', { gameLogId: gameId, move })
     }
 }
 

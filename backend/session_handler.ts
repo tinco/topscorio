@@ -20,7 +20,11 @@ export default class SessionHandler {
                 case 'finish-auth': await this.session.finishAuth(message.data); break
                 case 'add-game': await this.session.addGame(message.data); break
                 case 'get-newest-games': await this.session.getNewestGames(message.data); break
-                default: throw new Error(`Unkown command ${message.method}`)
+                case 'create-game': await this.session.createGameLog(message.data); break
+                case 'join-game': await this.session.joinGameLog(message.data); break
+                case 'start-game': await this.session.startGameLog(message.data); break
+                case 'make-move': await this.session.makeMove(message.data); break
+                default: throw new Error(`Unknown command ${message.method}`)
             }
         } catch (e) {
             this.sendError(e)

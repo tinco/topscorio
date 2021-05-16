@@ -46,8 +46,12 @@ class GamesStore extends EventEmitter {
         })
 
         gameLogsSubscriber.on('message', (channel, message) => {
+            console.log('emitting game_log', channel, message)
             this.emit(`game_logs-${channel}`, JSON.parse(message))
         })
+
+        gamesSubscriber.subscribe('newest')
+        gameLogsSubscriber.subscribe('open')
     }
 
     on(nameS: string | symbol, handler: EventListener): this {
@@ -62,10 +66,13 @@ class GamesStore extends EventEmitter {
                     })
                     break
                 case 'game_logs':
-                    gamesSubscriber.subscribe(channel).catch((err) => {
+                    console.log('subscribing to gamelogs channel', channel)
+                    gameLogsSubscriber.subscribe(channel).catch((err) => {
                         console.log("ERROR: Can't subscribe to channel: " + err.message)
                     })
                     break
+                default:
+                    throw new Error("Unknown topic " + topic)
             }
         } else {
             const count = this.listenerCountsPerChannel.get(channel)
@@ -95,6 +102,10 @@ class GamesStore extends EventEmitter {
 
     async saveGameState(id: string, state: any): Promise<void> {
         await gameLogsStore.set(stateKey(id), ".", state)
+        if (!state.started) {
+            gameLogsPublisher.publish('open', JSON.stringify(state))
+        }
+        console.log('publishing state to gameLogs', id)
         gameLogsPublisher.publish(id, JSON.stringify(state))
     }
 

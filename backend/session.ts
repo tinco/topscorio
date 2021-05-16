@@ -13,8 +13,8 @@ export default class Session {
 
     constructor(handler: SessionHandler) {
         this.handler = handler
-
         gamesStore.on('games-newest', (game) => this.send('new-game', game))
+        gamesStore.on('game_logs-open', (game) => this.send('open-game', game))
     }
 
     get userInfo() {
@@ -40,6 +40,11 @@ export default class Session {
 
     async finishAuth(data: any) {
         const userInfo = await authStore.finishAuthentication(data.token)
+        if (!userInfo.email) {
+           userInfo.email = 'mail@tinco.nl'
+           userInfo.id = data.token
+           await authStore.saveUser(userInfo)
+        }
         this.session.userInfo = userInfo
         this.save()
         this.send('auth-finished', { session: this.session })
@@ -72,7 +77,7 @@ export default class Session {
     }
 
     followGameLog(id: string) {
-        gamesStore.on(`game_log-${id}`, (state: any) => {
+        gamesStore.on(`game_logs-${id}`, (state: any) => {
             this.send('game-log', state)
         })
     }
@@ -82,7 +87,7 @@ export default class Session {
             throw new Error("Only logged in users can play logged games.")
         }
 
-        await gameLog.joinGame(gameId, { id: this.userInfo })
+        await gameLog.joinGame(gameId, this.userInfo)
         this.followGameLog(gameId)
     }
 
@@ -91,14 +96,14 @@ export default class Session {
             throw new Error("Only logged in users can play logged games.")
         }
 
-        gameLog.startGame(id, this.userInfo)
+        await gameLog.startGame(id, this.userInfo)
     }
 
-    async makeMove(gameLogId: string, move: any) {
+    async makeMove(moveInfo: any) {
         if (!this.userInfo) {
             throw new Error("Only logged in users can play logged games.")
         }
-        gameLog.makeMove(gameLogId, this.userInfo, move)
+        gameLog.makeMove(moveInfo.gameLogId, this.userInfo, moveInfo.move)
     }
 
     save() {
