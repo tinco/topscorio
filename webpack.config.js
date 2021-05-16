@@ -35,10 +35,19 @@ export default {
                 // Compiles Sass to CSS
                 "sass-loader",
             ],
-        }, ],
+        }, {
+            test: /\.m?js/,
+            resolve: {
+                fullySpecified: false
+            }
+        }, {
+            test: /\.svg/,
+            type: 'asset',
+            exclude: /node_modules/
+        }],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', '.json'],
     },
     devtool: 'inline-source-map',
     plugins: [

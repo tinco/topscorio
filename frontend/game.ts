@@ -1,4 +1,5 @@
 import Session from './session'
+import { Chessground } from 'chessground'
 
 class Game {
     session: Session
@@ -38,6 +39,7 @@ class Game {
             <label for="game-move">Insert move</label>
             <input type="text" id="game-move" />
             <button id="move">Move</button>
+            <div id="board" class="merida"></div>
         `
         document.getElementById('game-color').innerHTML = JSON.stringify(this.state.colors)
         document.getElementById('game-fen').innerHTML = JSON.stringify(this.state.fen)
@@ -45,6 +47,19 @@ class Game {
             const move = (document.getElementById('game-move') as HTMLInputElement).value
             this.session.makeMove(this.id, move)
         }
+
+        const color = this.state.colors[this.session.userInfo.id] === 'w' ? 'white' : 'black'
+        const cg = Chessground(document.getElementById('board'), {
+            fen: this.state.fen,
+            orientation: color,
+            movable: {
+                color,
+                free: false
+            },
+            draggable: {
+                showGhost: true
+            }
+        })
     }
 
     nextState(state: any) {
