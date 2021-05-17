@@ -48,7 +48,7 @@ class AuthStore {
         if (!authResult) {
             throw new Error("Invalid token")
         }
-        let userInfo = await usersStore.get(authResult.email, '.')
+        let userInfo = await this.getUser(authResult.email)
         let newUser = false
 
         if (!userInfo) {
@@ -68,6 +68,10 @@ class AuthStore {
 
     async saveUser(userInfo: any) {
         return usersStore.set(userInfo.email, '.', userInfo)
+    }
+
+    async getUser(email: string): Promise<any> {
+        return usersStore.get(email, '.')
     }
 }
 

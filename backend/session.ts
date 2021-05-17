@@ -4,13 +4,14 @@ import cryptoRandomString from 'crypto-random-string'
 import mailer from './mailer.js'
 import gamesStore from './games_store.js'
 import gameLog from './game_log.js'
+import authentication_store from './authentication_store.js'
 
 const makeToken = (length=10): string => cryptoRandomString({length})
 
 export default class Session {
     handler: SessionHandler
     session: any
-    
+
     constructor(handler: SessionHandler) {
         this.handler = handler
 
@@ -31,6 +32,9 @@ export default class Session {
     async resume(data: any) {
         const sessionToken = data.sessionToken as string
         this.session = await authStore.resumeSession(sessionToken)
+        if (this.session.userInfo) {
+            this.session.userInfo = await authentication_store.getUser(this.session.userInfo.email)
+        }
         this.send('resumed', { session: this.session })
     }
 

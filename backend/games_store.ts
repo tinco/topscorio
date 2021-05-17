@@ -1,9 +1,12 @@
 import Redis from "ioredis"
 import RedisJSON from "ioredis-json"
 import EventEmitter from "events"
+import fs from 'fs'
 
 import dotenv from "dotenv"
 dotenv.config()
+
+const CHESS = fs.readFileSync('./chess/chess.js', 'utf8')
 
 const gameLogsStore = new RedisJSON(process.env.GAME_LOGS_REDIS)
 const gameLogsPublisher = new Redis(process.env.GAME_LOGS_REDIS)
@@ -95,6 +98,13 @@ class GamesStore extends EventEmitter {
     }
 
     async getGameInfo(id: string): Promise<any> {
+        if (id === 'chess') {
+            return {
+                id: 'chess',
+                name: 'Chess',
+                code: CHESS
+            }
+        }
         return gamesStore.get(gameKey(id),'.')
     }
 

@@ -2041,8 +2041,8 @@ class Game {
             const outcome = actual === 0.5 ? '=' : actual === 1 ? '=' : '-'
             player.games.push({ o: outcome, p: player.id, r: opponent.rating, s: change })
         })
-        state.players[0].rating = state.players[0].rating + state.players[0].games[state.players[0].games.length - 1].s
-        state.players[1].rating = state.players[1].rating + state.players[1].games[state.players[1].games.length - 1].s
+        state.players[0].rating = Math.round(10 * state.players[0].rating + state.players[0].games[state.players[0].games.length - 1].s + Number.EPSILON) / 10.0
+        state.players[1].rating = Math.round(10 * state.players[1].rating + state.players[1].games[state.players[1].games.length - 1].s + Number.EPSILON) / 10.0
         return state
     }
 }

@@ -5,7 +5,7 @@
  * board and pieces displayed!
  */
 
-#board {
+#game-board {
     width: 320px;
     height: 320px;
     position: relative;
@@ -95,7 +95,7 @@ cg-board square.current-premove {
     background-color: rgba(20, 30, 85, 0.5);
 }
 
-#board piece {
+#game-board piece {
     position: absolute;
     top: 0;
     left: 0;
@@ -121,16 +121,16 @@ cg-board piece.fading {
     opacity: 0.5;
 }
 
-#board square.move-dest:hover {
+#game-board square.move-dest:hover {
     background-color: rgba(20, 85, 30, 0.3);
 }
 
-#board piece.ghost {
+#game-board piece.ghost {
     opacity: 0.3;
 }
 
-#board .cg-shapes,
-#board .cg-custom-svgs {
+#game-board .cg-shapes,
+#game-board .cg-custom-svgs {
     overflow: hidden;
     position: absolute;
     top: 0px;
@@ -140,17 +140,17 @@ cg-board piece.fading {
     pointer-events: none;
 }
 
-#board .cg-shapes {
+#game-board .cg-shapes {
     opacity: 0.6;
     z-index: 2;
 }
 
-#board .cg-custom-svgs {
+#game-board .cg-custom-svgs {
     /* over piece.anim = 8, but under piece.dragging = 10 */
     z-index: 9;
 }
 
-#board coords {
+#game-board coords {
     position: absolute;
     display: flex;
     pointer-events: none;
@@ -158,7 +158,7 @@ cg-board piece.fading {
     font-size: 9px;
 }
 
-#board coords.ranks {
+#game-board coords.ranks {
     right: -15px;
     top: 0;
     flex-flow: column-reverse;
@@ -166,11 +166,11 @@ cg-board piece.fading {
     width: 12px;
 }
 
-#board coords.ranks.black {
+#game-board coords.ranks.black {
     flex-flow: column;
 }
 
-#board coords.files {
+#game-board coords.files {
     bottom: -16px;
     left: 0;
     flex-flow: row;
@@ -180,66 +180,66 @@ cg-board piece.fading {
     text-align: center;
 }
 
-#board coords.files.black {
+#game-board coords.files.black {
     flex-flow: row-reverse;
 }
 
-#board coords coord {
+#game-board coords coord {
     flex: 1 1 auto;
 }
 
-#board coords.ranks coord {
+#game-board coords.ranks coord {
     transform: translateY(39%);
 }
 
-#board {
+#game-board {
     background-image: url('images/board/blue.svg');
 }
 
-#board piece.pawn.white {
+#game-board piece.pawn.white {
     background-image: url('images/pieces/merida/wP.svg');
 }
 
-#board piece.bishop.white {
+#game-board piece.bishop.white {
     background-image: url('images/pieces/merida/wB.svg');
 }
 
-#board piece.knight.white {
+#game-board piece.knight.white {
     background-image: url('images/pieces/merida/wN.svg');
 }
 
-#board piece.rook.white {
+#game-board piece.rook.white {
     background-image: url('images/pieces/merida/wR.svg');
 }
 
-#board piece.queen.white {
+#game-board piece.queen.white {
     background-image: url('images/pieces/merida/wQ.svg');
 }
 
-#board piece.king.white {
+#game-board piece.king.white {
     background-image: url('images/pieces/merida/wK.svg');
 }
 
-#board piece.pawn.black {
+#game-board piece.pawn.black {
     background-image: url('images/pieces/merida/bP.svg');
 }
 
-#board piece.bishop.black {
+#game-board piece.bishop.black {
     background-image: url('images/pieces/merida/bB.svg');
 }
 
-#board piece.knight.black {
+#game-board piece.knight.black {
     background-image: url('images/pieces/merida/bN.svg');
 }
 
-#board piece.rook.black {
+#game-board piece.rook.black {
     background-image: url('images/pieces/merida/bR.svg');
 }
 
-#board piece.queen.black {
+#game-board piece.queen.black {
     background-image: url('images/pieces/merida/bQ.svg');
 }
 
-#board piece.king.black {
+#game-board piece.king.black {
     background-image: url('images/pieces/merida/bK.svg');
 }

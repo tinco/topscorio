@@ -71,5 +71,47 @@
     </section>
 
     <section id="page-game" class="page hidden">
+        <header class="site-header sticky-top py-1">
+            <nav class="container d-flex flex-column flex-md-row justify-content-between">
+                <span>
+                <span id="game-player-email" class="py-2 d-none d-md-inline-block" href="#">email@hey.com</span>
+                <span class="badge bg-primary" id="game-player-rating-badge">1200</span>
+                </span>
+            </nav>
+        </header>
+        <div id="game-states">
+            <div class="container" id="game-waiting">
+                <div class="py-5 text-center">
+                    <button class="btn btn-primary" id="game-join-game-button">Look for game</button>
+                </div>
+            </div>
+
+            <div class="container hidden" id="game-lobby">
+                <div class="py-5 text-center">
+                    <h2 id="game-waiting" class="">Waiting for match...</h2>
+                    <h2 id="game-in-lobby" class="hidden">
+                        In lobby with: <span class="badge bg-primary" id="game-lobby-opponent-badge"></span>
+                    </h2>
+                    <button class="btn btn-primary" id="game-lobby-start-button">Start game</button>
+                </div>
+            </div>
+
+            <div class="container hidden" id="game-play">
+                <p>You are playing as <span id="game-color"></span></p>
+                <p>It is currently <span id="game-turn"></span>'s turn to move</p>
+                <div id="game-board" class="merida"></div>
+            </div>
+
+            <div class="container hidden" id="game-finished">
+                <div class="py-5 text-center">
+                    <h2>Great game!</h2>
+                    <p>Your rating is now <span class="badge bg-primary" id="game-result-rating"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container text-center">
+            <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="window.location.reload()">Go back</button>
+        </div>
     </section>
 </main>

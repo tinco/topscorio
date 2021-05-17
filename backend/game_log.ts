@@ -22,14 +22,18 @@ import {VM, VMScript} from 'vm2'
 import fs from 'fs'
 import cryptoRandomString from 'crypto-random-string'
 import gamesStore from './games_store.js'
+import usersStore from './authentication_store.js'
 
 interface IGameState {
+    gameId: string
+    started: boolean
     game_over: boolean
-    scores: {[key: string]: number}
+    players: {[key: string]: any}
 }
 
 interface IPlayer {
-    id: string
+    id: string,
+    games: {[key: string]: any }
 }
 
 interface IGame<State extends IGameState> {
@@ -41,7 +45,7 @@ const makeToken = (length=10): string => cryptoRandomString({length})
 
 export default new class GameLog {
     getGame(gameInfo: any): VM {
-        const code = fs.readFileSync('./chess/chess.js', 'utf8')
+        const code = gameInfo.code
         const script = new VMScript(code as unknown as string)
         console.log('compiling script...')
         script.compile()
@@ -64,6 +68,15 @@ export default new class GameLog {
     async createGame(gameId: string, player: IPlayer): Promise<any> {
         const id = makeToken(16)
         const gameInfo = await gamesStore.getGameInfo(gameId)
+
+        if(!player.games) {
+            player.games = {}
+        }
+
+        if(!player.games[gameInfo.id]) {
+            player.games[gameInfo.id] = {}
+        }
+
         const state = { gameLogId: id, gameId: gameInfo.id, started: false, players: [player] }
         await gamesStore.saveGameState(id, state)
         return state
@@ -72,6 +85,17 @@ export default new class GameLog {
     async joinGame(id: string, player: IPlayer) {
         const gameState = await gamesStore.getGameState(id)
         const gameInfo = await gamesStore.getGameInfo(gameState.gameId)
+
+        if(!player.games) {
+            player.games = {}
+        }
+
+        if(!player.games[gameInfo.id]) {
+            player.games[gameInfo.id] = {}
+        }
+
+        await usersStore.saveUser(player)
+
         if (!gameState.started ) { // && gameState.players.length < gameInfo.playerCount) {
             gameState.players.push(player)
             await gamesStore.saveGameState(id, gameState)
@@ -94,7 +118,10 @@ export default new class GameLog {
 
         console.log('Making VM...')
         const vm = this.getGame(gameInfo)
-        vm.setGlobal('players', gameState.players)
+        const players = gameState.players.map((p: any) => {
+            return Object.assign(p.games[gameInfo.id], { id: p.id, email: p.email })
+        })
+        vm.setGlobal('players', players)
 
         const state = JSON.parse(vm.run(`
             const g = new Game()
@@ -127,8 +154,18 @@ export default new class GameLog {
         if(!state) {
             throw new Error("Faulty gamestate")
         }
-        await gamesStore.saveGameState(id, state)
 
+        await gamesStore.saveGameState(id, state)
+        if (state.game_over) {
+            state.players.forEach(async (p: any) => {
+               const user = await usersStore.getUser(p.email)
+               if (!user.games) {
+                    user.games = {}
+               }
+               user.games[state.gameId] = p
+               usersStore.saveUser(user)
+            })
+        }
     }
 /*
     foolsMate() {
@@ -140,7 +177,6 @@ export default new class GameLog {
                 { games: [] as any[], rating: 1200, id: 'B' }
             ],
             game_over: false,
-            scores: {}
         } as IGameState
 
         const playerOne = (state as any).players[0] as IPlayer
