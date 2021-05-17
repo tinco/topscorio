@@ -61,3 +61,27 @@ Games are saved in GAMES_REDIS, this should also be persisted.
 
 Game logs are instances of players using a game together. This is where all game moves and states are saved. Persistence
 is also recommended here.
+
+
+How data is stored
+=======
+
+## Users and sessions
+
+Users and sessions storage is managed in `backend/authentication_store.ts`.
+
+New sessions are stored with `SETEX`, generating a unique session token for each session. E.g.: `SETEX session-123abc 259200 {"some": "json"}`
+
+Sessions are resumed by fetching the setting from `localStorage` and then retrieving the session from Redis with e.g.: `GET session-123abc`
+
+New authentication tokens are stored the same way, but with a shorter expiry.
+
+Users are stored using `JSON.SET`, using the e-mail address as a key.
+
+Users are retrieved using `JSON.GET` using '.' as the path to retrieve the whole object.
+
+# Games
+
+
+
+
