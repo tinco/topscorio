@@ -38,6 +38,12 @@ npm run frontend
 
 And navigate to http://localhost:5010 in your browser.
 
+Game example
+=====
+
+The app has an example Chess game implemented, open up multiple browser sessions to test this.
+
+![Screenshot showing online multiplayer chess](https://i.imgur.com/59ZEyt8.png)
 
 Architecture
 =======
