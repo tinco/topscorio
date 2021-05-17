@@ -82,6 +82,20 @@ Users are retrieved using `JSON.GET` using '.' as the path to retrieve the whole
 
 # Games
 
+Games and game logs storage is managed in `backend/games_store.ts`.
 
+A cache of all games is stored in the games database at key `all-games`. Upon server start up it is first retrieved using `JSON.GET all-games .`. If it is null then it is populated with a `JSON.SET all-games . {"newest": []}` command.
 
+Upon server startup the server subscribes to the `newest` channel on the games database, and the `open` channel on the game logs database. It does this with the `SUBSCRIBE` command like so: `SUBSCRIBE newest`.
 
+Whenever a client shows interest in a channel, the server initiates a subscription. For example when a user joins a game with id `abc123`, the server will subscribe to that game using `SUBSCRIBE abc123`.
+
+At the moment the server does not `UNSUBSCRIBE`.
+
+When a user creates a game, the server publishes a message on the `newest` channel like so: `PUBLISH newest { "gameInfo": ... }`
+
+In addition to that the server also does `JSON.ARRAPPEND all-games .newest {"gameInfo" : ... }` to add the game to the all games newest array, and to make sure it doesn't overflow it follows up with `JSON.arrtrim all-games .newest <begin> <end>` to shorten it back up.
+
+Once created the games are simply retrieved with `JSON.GET game-<gameid> .`. 
+
+Game logs are stored and retrieved in the same way, but instead of keeping track of a list of newest, there is only a pub/sub channel where open game lobbies are broadcasted like so: `PUBLISH open {"id": abc123, etc..}`.

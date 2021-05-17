@@ -10,7 +10,7 @@
     "hosted_url": "https://www.topscorio.com",
     "quick_deploy": "false",
     "language": ["Typescript", "Node.JS", "Redis"],
-    "redis_commands": ["SETEX", "GET", "JSON.GET", "JSON.SET", "PSUBSCRIBE", "PUBLISH", "JSON.ARRAPPEND", "JSON.ARRTRIM"],
+    "redis_commands": ["SETEX", "GET", "JSON.GET", "JSON.SET", "SUBSCRIBE", "PUBLISH", "JSON.ARRAPPEND", "JSON.ARRTRIM"],
     "redis_features": ["caching", "pub/sub"],
     "redis_modules": ["RediJSON"],
     "app_image_urls": [
