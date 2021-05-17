@@ -1,0 +1,23 @@
+{
+    "app_name": "Topscorio",
+    "description": "Webservice for keeping track of online multiplayer games.",
+    "hidden": false,
+    "rank": 21,
+    "type": "Full App",
+    "contributed_by": "Community",
+    "repo_url": "https://github.com/tinco/topscorio",
+    "download_url": "https://github.com/tinco/topscorio/archive/main.zip",
+    "hosted_url": "https://www.topscorio.com",
+    "quick_deploy": "false",
+    "language": ["Typescript", "Node.JS", "Redis"],
+    "redis_commands": ["SETEX", "GET", "JSON.GET", "JSON.SET", "PSUBSCRIBE", "PUBLISH", "JSON.ARRAPPEND", "JSON.ARRTRIM"],
+    "redis_features": ["caching", "pub/sub"],
+    "redis_modules": ["RediJSON"],
+    "app_image_urls": [
+        "https://i.imgur.com/j7LXeJl.png"
+    ],
+    "youtube_url": "https://youtu.be/XuLk4-W99HA",
+    "special_tags": ["Hackathon"],
+    "verticals": ["Technology"],
+    "markdown": "https://raw.githubusercontent.com/tinco/topscorio/main/README.md"
+}
