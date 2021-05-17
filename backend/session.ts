@@ -10,9 +10,10 @@ const makeToken = (length=10): string => cryptoRandomString({length})
 export default class Session {
     handler: SessionHandler
     session: any
-
+    
     constructor(handler: SessionHandler) {
         this.handler = handler
+
         gamesStore.on('games-newest', (game) => this.send('new-game', game))
         gamesStore.on('game_logs-open', (game) => this.send('open-game', game))
     }

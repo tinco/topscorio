@@ -13,7 +13,15 @@ class Session {
     session: any = {}
     listeners: Map<string, ((data: any) => void)[]> = new Map() 
 
+    connected: Promise<void>
+    connectedResolved: () => void
+
+
     constructor() {
+        this.connected = new Promise((resolve) => {
+            this.connectedResolved = resolve
+        })
+
         this.start()
     }
 
@@ -34,11 +42,19 @@ class Session {
 
     onresumed(data: any) {
         this.session = data.session
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token")
+        if (token) {
+            this.finishAuthentication(token)
+        }
+
+        this.connectedResolved()
     }
 
     onstarted(data: any) {
         this.session = data.session
         localStorage.setItem('SessionToken', this.session.sessionToken)
+        this.connectedResolved()
     }
 
     clearSession() {
@@ -50,7 +66,7 @@ class Session {
         switch(msg.method) {
             case 'resumed': this.onresumed(msg.data); break
             case 'started': this.onstarted(msg.data); break
-            case 'auth-finished': this.onAuthFinished(msg.data); break
+            case 'auth-finished': this._onAuthFinished(msg.data); break
             default: this.received(msg.method, msg.data); break
         }
     }
@@ -62,8 +78,9 @@ class Session {
         this.listeners.get(method).push(listener)
     }
 
-    onAuthFinished(data: any) {
+    _onAuthFinished(data: any) {
         this.session = data.session
+        this.received('auth-finished', data)
     }
 
     received(method: string, data:any) {

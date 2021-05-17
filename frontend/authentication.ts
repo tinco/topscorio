@@ -3,42 +3,44 @@ import Session from './session'
 class Authentication {
     session: Session
 
-    constructor(session: Session) {
+    constructor(session: Session, callback: () => void) {
         this.session = session 
+        this.session.on('auth-finished', () => {
+            this.destroy()
+            callback()
+        })
     }
 
     get element() {
-        return document.getElementById('authentication')
+        return document.getElementById('authentication-overlay')
+    }
+
+    destroy() {
+        this.element.remove()
     }
 
     render() {
         document.body.insertAdjacentHTML('beforeend',`
-            <section id="authentication-section">
-                <h1>Authentication</h1>
-                <div id="authentication"></div>
-                <p>Authenticate</p>
-                <input type="text" id="email" />
-                <button id="authenticate-button">Start authenticate</button>
-                <input type="text" id="auth-token" />
-                <button id="finish-authenticate-button">Finish authenticate</button>
-                <button id="clear-button">Clear session</button>
-            </section>
+            <div id="authentication-overlay" class="form-signin">
+                <div class="form-signin">
+                    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+                    <div class="form-floating">
+                    <input type="email" class="form-control" id="authenticate-email" placeholder="name@example.com">
+                    <label for="floatingInput">Email address</label>
+                    </div>
+
+                    <button class="w-100 btn btn-lg btn-primary" id="authenticate-button">Sign in</button>
+                </div>
+            </div>
         `)
         const authenticateButton = document.getElementById('authenticate-button')
-        const finishAuthenticateButton = document.getElementById('finish-authenticate-button')
-        authenticateButton.onclick = () => this.startAuthentication()
-        finishAuthenticateButton.onclick = () => this.finishAuthentication()
-        document.getElementById('clear-button').onclick = () => this.session.clearSession()
-    }
-
-    startAuthentication() {
-        const email = (document.getElementById('email') as HTMLInputElement).value
-        this.session.startAuthentication(email)
-    }
-
-    finishAuthentication() {
-        const token = (document.getElementById('auth-token') as HTMLInputElement).value
-        this.session.finishAuthentication(token)
+        authenticateButton.onclick = () => {
+            const email = (document.getElementById('authenticate-email') as HTMLInputElement).value
+            authenticateButton.classList.add('disabled')
+            authenticateButton.innerHTML = "Please check your e-mail to log in"
+            this.session.startAuthentication(email)
+        }
     }
 }
 

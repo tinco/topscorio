@@ -1,11 +1,4 @@
-html {
-    background-size: cover;
-    background-color: #444;
-    color: white;
-}
-
-h1 {
-    font-size: 36px;
-}
-
-@import './chessground.scss'
+@import "custom";
+@import "~bootstrap/scss/bootstrap";
+@import 'chessground';
+@import 'authentication'

@@ -85,6 +85,8 @@ class GamesStore extends EventEmitter {
         gameInfo.id = gameId
         gameInfo.publisher = user
         await gamesStore.set(gameKey(gameId),".", gameInfo)
+
+        gameInfo.delete('code')
         const newCount = await gamesStore.arrappend('all-games', '.newest', gameInfo)
         const newCountAfter = await gamesStore.arrtrim('all-games', '.newest', newCount - 50, newCount + 10000)
         gamesPublisher.publish('newest', JSON.stringify(gameInfo))

@@ -5,12 +5,14 @@ class Game {
     session: Session
     id: string
     state: any = {}
+    openGames: any[] = []
 
     constructor(session: Session) {
         this.session = session
 
         this.session.on('game-log', (state: any) => this.nextState(state))
         this.session.on('open-game', (data: any) => {
+            this.openGames.push(data)
             this.openedGame(data)
         })
 
@@ -23,13 +25,23 @@ class Game {
     }
 
     render() {
-        document.body.insertAdjacentHTML('beforeend',`
+        document.getElementById('page-game').insertAdjacentHTML('beforeend',`
         <div id="game">
             <button id="start-game">Start</button>
         </div>
         `)
         const startButton = document.getElementById('start-game')
         startButton.onclick = () => this.startGame()
+    }
+
+    playGame(gameId: string) {
+        let game = this.openGames.filter((g) => g.gameId === gameId)[0]
+        if (game) {
+            console.log('joining game', game)
+            this.session.joinGame(game.gameLogId)
+        } else {
+            this.session.createGame(gameId)
+        }
     }
 
     renderGame() {

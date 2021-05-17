@@ -1,0 +1,75 @@
+<main>
+    <section id="page-index" class="page">
+        <div class="px-4 py-5 my-5 text-center">
+            <h1>
+                <img height="300px" width="300px" class="d-block mx-auto mb-4" src="<%- require(`./style/images/default.svg`) %>" alt="Topscorio">
+            </h1>
+            <div class="col-lg-6 mx-auto">
+                <p class="lead mb-4">Power your games with real-time multiplayer and live high scores.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <button id="index-sign-in" type="button" class="btn btn-primary btn-lg px-4 gap-3">Start now</button>
+                    <button id="index-play" type="button" class="btn btn-outline-secondary btn-lg px-4">Try game</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="page-games" class="page hidden">
+        <div class="container">
+            <form id="games-new-game-form">
+                <div class="py-5 text-center">
+                    <img class="d-block mx-auto mb-4" src="<%- require(`./style/images/default.svg`) %>" alt="" width="150" height="150">
+                    <h2>Create a new game</h2>
+                    <p class="lead">Enter the details of your game and allow players to compare scores and play together.</p>
+                </div>
+
+                <div class="row g-5">
+                    <div class="mb-3">
+                        <label for="games-game-name" class="form-label">Name</label>
+                        <input class="form-control" id="games-game-name" placeholder="My awesome game">
+                    </div>
+                    <div class="mb-3">
+                        <label for="games-game-code" class="form-label">Game code (in Javascript)</label>
+                        <textarea class="form-control" id="games-game-code" rows="20">
+                    // define a Game class with a start and a move function, we take care of the rest!
+
+                    class Game {
+                        start(players) {
+                            const state = {
+                                // initial game state
+                            }
+                            return state
+                        }
+                    
+                        move(state, player, move) {
+                            // calculate move result
+                            state.game_over = false
+                            return state
+                        }
+                    }
+                </textarea>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-primary" id="games-create-game">Create game</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="container">
+            <div class="py-5 text-center">
+                <h2>Newest games</h2>
+                <ul id="games-newest-games" class="list-group">
+                </ul>
+            </div>
+        </div>
+
+        <div class="container text-center">
+            <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="window.location.reload()">Go back</button>
+        </div>
+    </section>
+
+    <section id="page-game" class="page hidden">
+    </section>
+</main>

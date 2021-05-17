@@ -1,21 +1,45 @@
 import './style/main.scss'
-import log from './log'
 import Session from './session'
 import Authentication from './authentication'
 import Games from './games'
 import Game from './game'
 
-log("Hello World")
+const indexSignInButton = document.getElementById('index-sign-in')
+const indexPlayButton = document.getElementById('index-play')
 
 const session = new Session()
 
-log('Built websocket')
+const switchPage = (page: string) => {
+    document.querySelectorAll('main > .page').forEach((e) => e.classList.add('hidden'))
+    document.getElementById(`page-${page}`).classList.remove('hidden')
+}
 
-const authentication = new Authentication(session)
-authentication.render()
+indexSignInButton.onclick = () => {
+    if (!session.userInfo) {
+        const authentication = new Authentication(session, () => switchToGames())
+        authentication.render()
+    } else {
+        switchToGames()
+    }
+}
 
-const games = new Games(session)
-games.render()
+indexPlayButton.onclick = () => {
+    if (!session.userInfo) {
+        const authentication = new Authentication(session, () => switchToGame())
+        authentication.render()
+    } else {
+        switchToGame()
+    }
+}
 
-const game = new Game(session)
-game.render()
+const switchToGames = () => {
+    const games = new Games(session)
+    games.render()
+    switchPage('games')
+}
+
+const switchToGame = () => {
+    const game = new Game(session)
+    game.render()
+    switchPage('game')
+}
