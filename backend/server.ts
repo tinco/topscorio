@@ -6,6 +6,12 @@ import ws from "ws"
 
 import SessionHandler from './session_handler.js'
 
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const ROOT_DIR = dirname(fileURLToPath(import.meta.url))
+
+
 const app = express()
 const port = process.env.SERVER_PORT
 
@@ -25,6 +31,8 @@ app.get( "/api/", ( req, res ) => {
         status: "ok"
     })
 })
+
+app.use(express.static( ROOT_DIR + '/../frontend'))
 
 // start the Express server
 const server = app.listen( port, () => {

@@ -7,8 +7,7 @@
     "scripts": {
         "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
         "build": "tsc && webpack build",
-        "prestart": "npm run build",
-        "start": "node .",
+        "start": "node dist/backend/server.js",
         "frontend": "webpack serve",
         "backend": "npm run build && node .",
         "test": "echo \"Error: no test specified\" && exit 1"
