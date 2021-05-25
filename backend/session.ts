@@ -129,8 +129,8 @@ export default class Session {
         const [redisResult, mailResult] = await Promise.all([
             authStore.startAuthentication(token, email),
             mailer.send({
-            to: 'mail@tinco.nl',
-            from: 'mail@tinco.nl', // Change to your verified sender
+            to: 'email',
+            from: 'authentication@topscorio.com', // Change to your verified sender
             subject: 'Log in at Topscorio',
             text: `Log in at Topscorio using the following link https://www.topscorio.com/auth?token=${token}`,
             html: `
