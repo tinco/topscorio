@@ -94,7 +94,9 @@ class Session {
         log('Starting websocket..')
 
         this.lastCloseTime = new Date()
-        this.socket = new WebSocket('ws://' + window.location.host + '/auth')
+
+        const protocol = location.protocol === 'https' ? 'wss://' : 'ws://'
+        this.socket = new WebSocket(protocol + window.location.host + '/auth')
 
         this.socket.onopen = () => this.onopen()
 
